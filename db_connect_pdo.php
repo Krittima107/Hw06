@@ -13,7 +13,6 @@ try {
         PDO::ATTR_EMULATE_PREPARES => false,
     ]);
 } catch (PDOException $e) {
-    // ซ่อนรายละเอียด Error จริงเพื่อความปลอดภัยเมื่อใช้งานจริง
     error_log("Database Connection Error: " . $e->getMessage());
     die(json_encode(['status' => 'error', 'message' => 'ไม่สามารถเชื่อมต่อฐานข้อมูลได้']));
 }
