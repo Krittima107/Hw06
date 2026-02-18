@@ -38,6 +38,7 @@
             font-family: 'Mali', cursive;
         }
 
+        /* Navbar */
         .navbar {
             background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(10px);
@@ -63,6 +64,7 @@
             color: white;
         }
 
+        /* Search Box */
         .search-container {
             max-width: 600px;
             margin: 0 auto;
@@ -74,9 +76,10 @@
             border-radius: 50px;
             padding: 15px 30px;
             padding-right: 60px;
-            box-shadow: 0 5px 15px rgba(255, 218, 193, 0.3);
+            box-shadow: 0 5px 15px rgba(255, 218, 193, 0.2);
             color: var(--text-head);
             font-size: 1.1rem;
+            transition: 0.3s;
         }
 
         .search-input:focus {
@@ -104,6 +107,7 @@
             transform: translateY(-50%) scale(1.1);
         }
 
+        /* Card */
         .cat-card {
             background: var(--card-bg);
             border: none;
@@ -112,7 +116,8 @@
             transition: all 0.4s ease;
             box-shadow: 0 10px 20px rgba(109, 76, 65, 0.05);
             height: 100%;
-            position: relative;
+            display: flex;
+            flex-direction: column;
         }
 
         .cat-card:hover {
@@ -129,12 +134,6 @@
         .card-title {
             color: var(--text-head);
             font-weight: 700;
-            font-size: 1.4rem;
-        }
-
-        .card-subtitle {
-            color: #ffb7b2;
-            font-weight: 600;
         }
 
         .btn-pastel {
@@ -145,6 +144,7 @@
             padding: 10px;
             font-weight: 600;
             transition: 0.3s;
+            border: none;
         }
 
         .btn-pastel:hover {
@@ -152,10 +152,10 @@
             color: white;
         }
 
+        /* Modal */
         .modal-content {
             border-radius: 25px;
             border: none;
-            overflow: hidden;
         }
 
         .modal-header {
@@ -181,10 +181,10 @@
         </div>
     </nav>
 
-    <div class="container" style="margin-top: 100px;">
+    <div class="container" style="margin-top: 120px;">
         <div class="text-center mb-5">
             <h1 class="display-5 fw-bold" style="color: var(--text-head);">ค้นหาเจ้านายที่คุณรัก 🐾</h1>
-            <p class="lead" style="color: var(--text-body);">รวมสายพันธุ์แมวน่ารักๆ ข้อมูลนิสัย และวิธีดูแล</p>
+            <p class="lead">รวมสายพันธุ์แมวน่ารักๆ ข้อมูลนิสัย และวิธีดูแล</p>
 
             <div class="search-container mt-4">
                 <form id="search-form">
@@ -192,7 +192,7 @@
                         placeholder="พิมพ์ชื่อสายพันธุ์... (เช่น เปอร์เซีย)">
                     <button type="submit" class="search-btn"><i class="bi bi-search"></i></button>
                 </form>
-                <div id="clear-search-btn" class="mt-3 d-none">
+                <div id="clear-search-area" class="mt-3 d-none">
                     <button class="badge rounded-pill bg-secondary text-decoration-none px-3 py-2 border-0"
                         onclick="clearSearch()">
                         ล้างคำค้นหา ✖
@@ -204,7 +204,7 @@
         <div id="cat-container" class="row g-4 pb-5">
             <div class="text-center w-100 py-5">
                 <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">กำลังโหลด...</span>
+                    <span class="visually-hidden">Loading...</span>
                 </div>
             </div>
         </div>
@@ -226,12 +226,10 @@
                         <div class="col-md-6">
                             <h5 class="fw-bold" style="color: var(--primary);">📝 ข้อมูลทั่วไป</h5>
                             <p id="m_desc" class="text-muted"></p>
-
                             <div class="mt-4 p-3" style="background: #fff9f5; border-radius: 15px;">
                                 <h6 class="fw-bold" style="color: var(--text-head);">✨ นิสัยใจคอ</h6>
                                 <p id="m_char" class="small mb-0"></p>
                             </div>
-
                             <div class="mt-3 p-3" style="background: #f0fbf7; border-radius: 15px;">
                                 <h6 class="fw-bold text-success">🩺 การดูแลรักษา</h6>
                                 <p id="m_care" class="small mb-0"></p>
@@ -251,60 +249,44 @@
     <script>
         function loadCats(searchQuery = '') {
             const container = document.getElementById('cat-container');
-            const clearBtn = document.getElementById('clear-search-btn');
+            const clearArea = document.getElementById('clear-search-area');
 
-            if (searchQuery) clearBtn.classList.remove('d-none');
-            else clearBtn.classList.add('d-none');
+            if (searchQuery) clearArea.classList.remove('d-none');
+            else clearArea.classList.add('d-none');
 
             fetch(`api_cats.php?search=${encodeURIComponent(searchQuery)}`)
-                .then(response => response.json())
+                .then(res => res.json())
                 .then(data => {
                     container.innerHTML = '';
-
                     if (data.status === 'success' && data.data.length > 0) {
                         data.data.forEach(cat => {
                             const catJson = JSON.stringify(cat).replace(/"/g, '&quot;');
-                            const description = cat.description ? cat.description.substring(0, 80) + '...' : '-';
-
-                            const html = `
+                            const desc = cat.description ? cat.description.substring(0, 70) + '...' : '-';
+                            container.innerHTML += `
                                 <div class="col-12 col-md-6 col-lg-4">
                                     <div class="cat-card">
                                         <img src="${cat.image_url}" class="card-img-top" onerror="this.src='https://via.placeholder.com/400x250/ffdac1/6d4c41?text=Meow'">
                                         <div class="card-body p-4 d-flex flex-column">
                                             <h4 class="card-title">${cat.name_th}</h4>
-                                            <h6 class="card-subtitle mb-3 text-uppercase">${cat.name_en}</h6>
-                                            <p class="card-text flex-grow-1" style="font-size: 0.95rem;">
-                                                ${description}
-                                            </p>
-                                            <button class="btn btn-pastel mt-3" onclick="showDetails(${catJson})">
-                                                ดูน้องตัวนี้ ✨
-                                            </button>
+                                            <h6 class="text-muted small mb-3 text-uppercase">${cat.name_en}</h6>
+                                            <p class="small flex-grow-1">${desc}</p>
+                                            <button class="btn btn-pastel mt-3" onclick="showDetails(${catJson})">ดูน้องตัวนี้ ✨</button>
                                         </div>
                                     </div>
-                                </div>
-                            `;
-                            container.innerHTML += html;
+                                </div>`;
                         });
                     } else {
-                        container.innerHTML = `
-                            <div class="col-12 text-center py-5">
-                                <i class="bi bi-emoji-dizzy" style="font-size: 3rem; color: var(--primary);"></i>
-                                <h3 class="mt-3" style="color: var(--text-head);">ไม่พบน้องแมวที่ค้นหา</h3>
-                                <p>ลองพิมพ์คำอื่นดูนะ</p>
-                                <button onclick="clearSearch()" class="btn btn-pastel" style="max-width: 200px;">ดูแมวทั้งหมด</button>
-                            </div>
-                        `;
+                        container.innerHTML = `<div class="col-12 text-center py-5"><h3>🐾 ไม่พบน้องแมวที่ค้นหา</h3></div>`;
                     }
                 })
-                .catch(error => {
-                    container.innerHTML = `<div class="col-12 text-center text-danger py-5">เกิดข้อผิดพลาดในการโหลดข้อมูล</div>`;
+                .catch(err => {
+                    container.innerHTML = `<div class="col-12 text-center py-5 text-danger">ขออภัย เกิดข้อผิดพลาดในการเชื่อมต่อ</div>`;
                 });
         }
 
         document.getElementById('search-form').addEventListener('submit', function (e) {
             e.preventDefault();
-            const searchVal = document.getElementById('search-input').value;
-            loadCats(searchVal);
+            loadCats(document.getElementById('search-input').value);
         });
 
         function clearSearch() {
@@ -313,19 +295,15 @@
         }
 
         function showDetails(cat) {
-            document.getElementById('m_name').innerHTML = '<i class="bi bi-stars"></i> ' + cat.name_th + ' <small class="fs-6">(' + cat.name_en + ')</small>';
+            document.getElementById('m_name').innerHTML = `<i class="bi bi-stars"></i> ${cat.name_th} <small class="fs-6">(${cat.name_en})</small>`;
             document.getElementById('m_image').src = cat.image_url;
             document.getElementById('m_desc').innerText = cat.description || '-';
             document.getElementById('m_char').innerText = cat.characteristics || '-';
             document.getElementById('m_care').innerText = cat.care_instructions || '-';
-
-            var myModal = new bootstrap.Modal(document.getElementById('detailModal'));
-            myModal.show();
+            new bootstrap.Modal(document.getElementById('detailModal')).show();
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            loadCats();
-        });
+        document.addEventListener('DOMContentLoaded', () => loadCats());
     </script>
 </body>
 
