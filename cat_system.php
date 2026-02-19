@@ -83,7 +83,7 @@ if (!isset($_SESSION['admin_id'])) {
                         <label class="fw-bold text-primary">รูปภาพเพิ่มเติม (เลือกได้หลายรูปพร้อมกัน)</label>
                         <input type="file" name="gallery_files[]" class="form-control" accept="image/*" multiple>
                         <small class="text-muted">เคล็ดลับ: กด Ctrl (หรือ Command บน Mac)
-                            ค้างไว้เพื่อเลือกหลายรูป</small>
+                            ค้างไว้เพื่อเลือกหลายรูป(*ห้ามเลือกรูปซ้ำกับรูปหน้าปก*)</small>
                     </div>
                     <div class="col-12"><label>คำอธิบาย</label><textarea name="description" id="description"
                             class="form-control" rows="2"></textarea></div>

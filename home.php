@@ -204,30 +204,32 @@
         const galleryContainer = document.getElementById('m_gallery');
         galleryContainer.innerHTML = '';
 
-        // รูปหลัก (เพิ่มคลาส thumb-img และ active เข้าไป)
-        galleryContainer.innerHTML += `
-            <img src="${cat.image_url}" class="rounded shadow-sm thumb-img active" onclick="changeImage(this, this.src)">
-        `;
-
-        // รูปเพิ่มเติม
+        // 1. นำรูปภาพทั้งหมด (รูปหลัก + รูปเพิ่มเติม) มารวมกันใน Array เดียว
+        let allImages = [cat.image_url];
         if (cat.gallery && cat.gallery.length > 0) {
-            cat.gallery.forEach(imgUrl => {
-                galleryContainer.innerHTML += `
-                    <img src="${imgUrl}" class="rounded shadow-sm thumb-img" onclick="changeImage(this, this.src)">
-                `;
-            });
+            allImages = allImages.concat(cat.gallery);
         }
+
+        // 2. ใช้ Set เพื่อกรอง URL ของรูปที่ซ้ำกันออกไป ให้เหลือแค่รูปที่ไม่ซ้ำ
+        let uniqueImages = [...new Set(allImages)];
+
+        // 3. วนลูปสร้างรูปขนาดย่อจาก List ที่ไม่ซ้ำแล้ว
+        uniqueImages.forEach((imgUrl, index) => {
+            // รูปแรก (index 0) ให้มีคลาส active เพื่อแสดงขอบสีแดง
+            let activeClass = (index === 0) ? 'active' : '';
+
+            galleryContainer.innerHTML += `
+                <img src="${imgUrl}" class="rounded shadow-sm thumb-img ${activeClass}" onclick="changeImage(this, this.src)">
+            `;
+        });
+
         new bootstrap.Modal(document.getElementById('detailModal')).show();
     }
 
-    // ฟังก์ชันใหม่: ใช้สลับรูปใหญ่และย้ายขอบสีแดง
+    // ฟังก์ชันสำหรับสลับรูปและเลื่อนขอบ
     function changeImage(element, src) {
-        document.getElementById('m_image').src = src; // เปลี่ยนรูปภาพใหญ่
-
-        // ล้างกรอบสีแดง (.active) ออกจากรูปเล็กทุกรูปก่อน
+        document.getElementById('m_image').src = src;
         document.querySelectorAll('.thumb-img').forEach(img => img.classList.remove('active'));
-
-        // ใส่กรอบสีแดง (.active) ให้กับรูปที่เพิ่งโดนคลิก
         element.classList.add('active');
     }
 
