@@ -60,10 +60,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <form method="POST">
             <div class="mb-3">
-                <input type="text" name="username" class="form-control" placeholder="ชื่อผู้ใช้ (Username)" required>
+                <input type="text" name="username" class="form-control" placeholder="ชื่อผู้ใช้ (admin)" required>
             </div>
             <div class="mb-4">
-                <input type="password" name="password" class="form-control" placeholder="รหัสผ่าน (Password)" required>
+                <input type="password" name="password" class="form-control" placeholder="รหัสผ่าน (123456)" required>
             </div>
             <button type="submit" class="btn btn-pastel w-100 mb-3">เข้าสู่ระบบ ✨</button>
         </form>
