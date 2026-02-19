@@ -10,7 +10,6 @@ $params = [];
 $sql = "SELECT * FROM CatBreeds WHERE is_visible = 1";
 
 if (!empty($search)) {
-    // แยกตัวแปรเป็น 2 ชื่อ ไม่ให้ซ้ำกัน
     $sql .= " AND (name_th LIKE :search_th OR name_en LIKE :search_en)";
     $params[':search_th'] = "%" . $search . "%";
     $params[':search_en'] = "%" . $search . "%";
@@ -23,6 +22,15 @@ try {
     $stmt->execute($params);
     $cats = $stmt->fetchAll();
 
+    // ลูปดึงรูปภาพจากแกลลอรี่มาใส่ให้แมวแต่ละตัว
+    foreach ($cats as $key => $cat) {
+        $g_stmt = $conn->prepare("SELECT image_url FROM CatGallery WHERE cat_id = :cat_id");
+        $g_stmt->execute([':cat_id' => $cat['id']]);
+        $galleries = $g_stmt->fetchAll(PDO::FETCH_COLUMN); // ดึงมาแค่ URL
+
+        $cats[$key]['gallery'] = $galleries; // นำรูปเพิ่มเติมไปเก็บเป็น Array ในชื่อ gallery
+    }
+
     echo json_encode([
         'status' => 'success',
         'data' => $cats
@@ -30,7 +38,7 @@ try {
 } catch (PDOException $e) {
     echo json_encode([
         'status' => 'error',
-        'message' => 'เกิดข้อผิดพลาดในการดึงข้อมูล: ' . $e->getMessage()
+        'message' => 'เกิดข้อผิดพลาดในการดึงข้อมูล'
     ], JSON_UNESCAPED_UNICODE);
 }
 ?>
