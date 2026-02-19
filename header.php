@@ -1,3 +1,9 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+$current_page = basename($_SERVER['PHP_SELF']);
+?>
 <!DOCTYPE html>
 <html lang="th">
 
@@ -89,7 +95,7 @@
         }
 
         .btn-pastel:hover {
-            background-color: var(--primary);
+            background: var(--primary);
             color: white;
         }
     </style>
@@ -97,17 +103,21 @@
 
 <body>
 
-    <?php
-    // คำสั่งเช็คว่าตอนนี้เปิดไฟล์ชื่ออะไรอยู่
-    $current_page = basename($_SERVER['PHP_SELF']);
-    ?>
-
     <nav class="navbar navbar-expand-lg fixed-top">
         <div class="container">
             <a class="navbar-brand" href="home.php">
                 <i class="bi bi-balloon-heart-fill"></i> Meow Gallery
             </a>
-            <div class="ms-auto">
+
+            <div class="ms-auto d-flex align-items-center">
+
+                <?php if (isset($_SESSION['admin_id'])): ?>
+                    <span class="me-3" style="cursor: pointer;"
+                        title="สวัสดี, <?= htmlspecialchars($_SESSION['admin_name']) ?>">
+                        <i class="bi bi-person-circle" style="font-size: 1.8rem; color: var(--primary);"></i>
+                    </span>
+                <?php endif; ?>
+
                 <?php if ($current_page == 'home.php'): ?>
                     <a href="cat_system.php" class="nav-btn-admin text-decoration-none">
                         <i class="bi bi-gear-fill"></i> จัดการระบบ
@@ -118,6 +128,7 @@
                         <i class="bi bi-house-door-fill"></i> กลับหน้าผู้ชม
                     </a>
                 <?php endif; ?>
+    
             </div>
         </div>
     </nav>
